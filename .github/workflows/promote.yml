@@ -1,0 +1,100 @@
+name: PROMOTE
+on:
+  pull_request:
+    types: [closed]
+jobs:
+  build:
+    runs-on: [self-hosted, technologies]
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: extract variable
+        id: extract_variable
+        run: echo "::set-output name=pr_number::${{ github.event.pull_request.number }}";echo "::set-output name=repo::${{ github.event.pull_request.number }}"
+      - uses: actions/checkout@v1
+      - name: extract current version
+        id: extract_pr_version
+        run: echo "::set-output name=v::$(cat version.properties | grep 'semver' | sed -e 's/^version.semver=//')"
+      - name: run gradle promote
+        run: |
+          ./gradlew promote --stacktrace
+      - name: Delete PreRelease
+        id: delete_prerelease
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.TOKEN_GITHUB}}
+          script: |
+            const result = await github.repos.listReleases(context.repo);
+            result.data
+              .filter(release => release.tag_name == "${{ steps.extract_pr_version.outputs.v }}")
+              .forEach(function(release){
+                  const releaseObj = {release_id:release.id, owner:context.repo.owner, repo:context.repo.repo}
+                  github.repos.deleteRelease(releaseObj)
+                });
+      - name: Delete PreRelease Tag
+        run: |
+          git config --local user.email "github-action@saagie.com"
+          git config --local user.name "GitHub Action Bot"
+          remote_repo="https://${{ github.actor }}:${{ secrets.TOKEN_GITHUB }}@github.com/${{ github.repository }}.git"
+          git push --delete "${remote_repo}" ${{ steps.extract_pr_version.outputs.v }}
+      - name: Remove buildMeta version
+        run: |
+          ./gradlew incrementBuildMeta -Dversion.buildmeta=
+      - name: extract real version
+        id: extract_version
+        run: echo "::set-output name=v::$(cat version.properties | grep 'semver' | sed -e 's/^version.semver=//')"
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
+        with:
+          tag_name: ${{ steps.extract_version.outputs.v }}
+          release_name: Release ${{ steps.extract_version.outputs.v }}
+          draft: false
+          prerelease: false
+      - name: Upload Release technologies Asset ZIP
+        id: upload-release-asset-technologies-zip
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB}}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./tmp-zip/technologies.zip
+          asset_name: technologies.zip
+          asset_content_type: application/zip
+      - name: Upload Release technologies Asset JSON
+        id: upload-release-asset-technologies-json
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB}}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./tmp-zip/docker_listing.json
+          asset_name: docker_listing.json
+          asset_content_type: application/json
+      - name: Upload Release technologies Asset TEXT-PLAIN
+        id: upload-release-asset-technologies-textplain
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB}}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./tmp-zip/docker_listing.txt
+          asset_name: docker_listing.txt
+          asset_content_type: text/plain
+      - name: Upgrade version
+        run: |
+          ./gradlew incrementMinor
+          ./gradlew incrementBuildMeta -Dversion.buildmeta=
+      - name: Commit files
+        run: |
+          git config --local user.email "github-action@saagie.com"
+          git config --local user.name "GitHub Action Bot"
+          git commit -am "[BOT] Set new version"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.TOKEN_GITHUB }}
