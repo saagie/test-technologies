@@ -1,0 +1,33 @@
+version: v2
+id: unavailable-ext-job
+label: External Technology Not Available
+type: EXTERNAL_JOB
+description: External Technology Not Available
+available: false
+
+contexts:
+  - id: default
+    label: Default
+    description: Default
+    available: true
+    recommended: false
+    trustLevel: deprecated
+    connectionTypeId: simple-connection
+    parameters:
+      - type: TEXT
+        id: message
+        label: Message
+        mandatory: true
+    actions:
+      start:
+        script: module.js
+        function: start
+      stop:
+        script: module.js
+        function: stop
+      getStatus:
+        script: module.js
+        function: getStatus
+      getLogs:
+        script: module.js
+        function: getLogs

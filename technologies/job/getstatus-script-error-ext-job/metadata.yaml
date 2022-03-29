@@ -1,0 +1,39 @@
+version: v2
+id: getstatus-script-error-ext-job
+label: External Technology With A getStatus Script Error
+type: EXTERNAL_JOB
+description: External Technology With A getStatus Script Error
+available: true
+
+contexts:
+  - id: default
+    label: Default
+    description: Default
+    available: true
+    recommended: false
+    trustLevel: deprecated
+    connectionTypeId: simple-connection
+    parameters:
+      - type: TEXT
+        id: message
+        label: Message
+        mandatory: true
+      - type: DYNAMIC_SELECT
+        id: dynamic_values
+        label: Dynamic Values
+        dynamicValues:
+          script: module.js
+          function: getDynamicValues
+    actions:
+      start:
+        script: module.js
+        function: start
+      stop:
+        script: module.js
+        function: stop
+      getStatus:
+        script: module.js
+        function: getStatus
+      getLogs:
+        script: module.js
+        function: getLogs

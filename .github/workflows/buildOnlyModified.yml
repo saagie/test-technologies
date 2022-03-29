@@ -19,9 +19,6 @@ jobs:
       - name: extract branch
         id: extract_branch
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-      - name: run gradle :buildModifiedConnectionTypes
-        run: |
-          ./gradlew buildModifiedJobs --parallel --scan -Dversion.buildmeta=${{ steps.extract_branch.outputs.branch }}
       - name: run gradle :buildModifiedJobs
         run: |
           ./gradlew buildModifiedJobs --parallel --scan -Dversion.buildmeta=${{ steps.extract_branch.outputs.branch }}

@@ -1,0 +1,54 @@
+version: "v1"
+type: JOB
+id: unavailable-bash
+label: Unavailable Bash
+description: Unavailable Bash
+available: false
+icon: bash
+contexts:
+  - id: debian10-buster
+    label: debian10-buster
+    available: true
+    recommended: true
+    trustLevel: stable
+    job:
+      features:
+        - type: COMMAND_LINE
+          label: Command line
+          mandatory: true
+          comment: Linux shell command
+          defaultValue: echo "Saagie Bash"
+        - type: ARTIFACT
+          label: Package
+          mandatory: false
+          comment: All files are accepted.
+        - type: SCHEDULER
+          label: Scheduled
+          mandatory: true
+    dockerInfo:
+      image: saagie/bash
+      baseTag: debian10-buster
+      version: debian10-buster-1.92.0
+  - id: debian9-stretch
+    label: debian9-stretch
+    available: true
+    recommended: false
+    trustLevel: stable
+    job:
+      features:
+        - type: COMMAND_LINE
+          label: Command line
+          mandatory: true
+          comment: Linux shell command
+          defaultValue: echo "Saagie Bash"
+        - type: ARTIFACT
+          label: Package
+          mandatory: false
+          comment: All files are accepted.
+        - type: SCHEDULER
+          label: Scheduled
+          mandatory: true
+    dockerInfo:
+      image: saagie/bash
+      baseTag: debian9-stretch
+      version: debian9-stretch-1.80.0

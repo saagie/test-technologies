@@ -1,0 +1,75 @@
+version: v2
+type: CONNECTION_TYPE
+id: illegal-form-connection
+label: Connection With Illegal Form
+
+parameters:
+  - type: TEXT
+    id: my-input
+    label: My Input
+    mandatory: true
+  - type: TEXT
+    id: duplicate-id
+    label: Duplicate Id
+  - type: TEXT
+    id: duplicate-id
+    label: Duplicate Id
+  - type: TEXT
+    id: missing-dependency
+    label: Missing Dependency
+    dependsOn:
+      - non-existing-input
+  - type: STATIC_SELECT
+    id: bad-default-value
+    label: Bad DefaultValue
+    defaultValue: non_existing_default_value
+    staticValues:
+      - id: v1
+        label: some first value
+      - id: v2
+        label: another value
+  - type: TEXT
+    id: non-mandatory
+    label: Non Mandatory
+    mandatory: false
+  - type: TEXT
+    id: mandatory
+    label: Mandatory
+    mandatory: true
+    dependsOn:
+      - non-mandatory
+  - type: STATIC_SELECT
+    id: missing-static-values
+    label: Missing static values
+  - type: TOGGLE
+    id: toggle-invalid-default
+    label: Toggle With Invalid Default
+    defaultValue: not_false_nor_true
+  - type: TOGGLE
+    id: toggle-with-static
+    label: Toggle With Static
+    staticValues:
+      - id: v1
+        label: some first value
+      - id: v2
+        label: another value
+  - type: TEXT
+    id: text-with-static
+    label: Text With Static
+    staticValues:
+      - id: v1
+        label: some first value
+      - id: v2
+        label: another value
+  - type: PASSWORD
+    id: password-with-static
+    label: Password With Static
+    staticValues:
+      - id: v1
+        label: some first value
+      - id: v2
+        label: another value
+  - type: PASSWORD
+    id: password-with-default
+    label: Password With Static
+    defaultValue: 12345

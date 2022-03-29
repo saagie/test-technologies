@@ -1,0 +1,6 @@
+version: v2
+id: simple-ext-job-2
+label: Simple External Job 2
+description: Simple External Job 2
+available: true
+type: EXTERNAL_JOB

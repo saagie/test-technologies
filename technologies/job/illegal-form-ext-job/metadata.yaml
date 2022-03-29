@@ -1,0 +1,135 @@
+version: v2
+id: illegal-form-ext-job
+label: External Technology With Illegal Form
+type: EXTERNAL_JOB
+description: External Technology With Illegal Form
+available: true
+
+contexts:
+  - id: default
+    label: Default
+    description: Default
+    available: true
+    recommended: false
+    trustLevel: deprecated
+
+    connectionTypeId: illegal-form-conection
+
+    parameters:
+      - type: TEXT
+        id: my-input
+        label: My Input
+        mandatory: true
+      - type: TEXT
+        id: duplicate-id
+        label: Duplicate Id
+      - type: TEXT
+        id: duplicate-id
+        label: Duplicate Id
+      - type: TEXT
+        id: missing-dependency
+        label: Missing Dependency
+        dependsOn:
+          - non-existing-input
+      - type: STATIC_SELECT
+        id: bad-default-value
+        label: Bad DefaultValue
+        defaultValue: non_existing_default_value
+        staticValues:
+          - id: v1
+            label: some first value
+          - id: v2
+            label: another value
+      - type: TEXT
+        id: non-mandatory
+        label: Non Mandatory
+        mandatory: false
+      - type: TEXT
+        id: mandatory
+        label: Mandatory
+        mandatory: true
+        dependsOn:
+          - non-mandatory
+      - type: STATIC_SELECT
+        id: missing-static-values
+        label: Missing static values
+      - type: DYNAMIC_SELECT
+        id: missing-dynamic-values
+        label: Missing dynamic values
+      - type: STATIC_SELECT
+        id: dynamic-in-static
+        label: Dynamic in Static
+        dynamicValues:
+          script: "./module.js"
+          function: getState
+        staticValues:
+          - id: v1
+            label: some first value
+          - id: v2
+            label: another value
+      - type: DYNAMIC_SELECT
+        id: static-in-dynamic
+        label: Static in Dynamic
+        dynamicValues:
+          script: "./module.js"
+          function: getState
+        staticValues:
+          - id: v1
+            label: some first value
+          - id: v2
+            label: another value
+      - type: TOGGLE
+        id: toggle-invalid-default
+        label: Toggle With Invalid Default
+        defaultValue: not_false_nor_true
+      - type: TOGGLE
+        id: toggle-with-static-dynamic
+        label: Toggle With Static And Dynamic
+        dynamicValues:
+          script: "./module.js"
+          function: getState
+        staticValues:
+          - id: v1
+            label: some first value
+          - id: v2
+            label: another value
+      - type: TEXT
+        id: text-with-static-and-dynamic
+        label: Text With Static And Dynamic
+        dynamicValues:
+          script: "./module.js"
+          function: getState
+        staticValues:
+          - id: v1
+            label: some first value
+          - id: v2
+            label: another value
+      - type: PASSWORD
+        id: password-with-static-and-dynamic
+        label: Password With Static And Dynamic
+        dynamicValues:
+          script: "./module.js"
+          function: getState
+        staticValues:
+          - id: v1
+            label: some first value
+          - id: v2
+            label: another value
+      - type: PASSWORD
+        id: password-with-default
+        label: Password With Static
+        defaultValue: 12345
+
+    actions:
+      start:
+        script: ./module.js
+        function: start
+      stop:
+        script: ./module.js
+        function: stop
+      getStatus:
+        script: ./module.js
+        function: getStatus
+      getLogs:
+        script: ./module.js
+        function: getLogs

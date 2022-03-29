@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import com.github.gradle.node.NodeExtension
 import com.saagie.technologies.SaagieTechnologiesPackageGradlePlugin
 import com.saagie.technologies.TYPE
 import com.saagie.technologies.modifiedProjects
@@ -68,11 +69,22 @@ config {
     }
 }
 
+subprojects {
+    apply(plugin = "com.github.node-gradle.node")
+
+    configure<NodeExtension> {
+        download.set(true)
+        version.set("16.14.2")
+        npmVersion.set("8.6.0")
+        yarnVersion.set("1.22.18")
+    }
+}
+
 tasks.register("buildModifiedJobs") {
     group = "technologies"
     description = "Build only modified jobs"
 
-    val modifiedProjects = modifiedProjects(TYPE.JOB, subprojects)
+    val modifiedProjects = modifiedProjects(TYPE.CONNECTION_TYPE, subprojects) + modifiedProjects(TYPE.JOB, subprojects)
 
     logger.info(this.description)
     dependsOn("incrementBuildMeta")
@@ -88,21 +100,6 @@ tasks.register("buildModifiedApps") {
     description = "Build only modified apps"
 
     val modifiedProjects = modifiedProjects(TYPE.APP, subprojects)
-
-    logger.info(this.description)
-    dependsOn("incrementBuildMeta")
-    logger.debug("$modifiedProjects")
-    modifiedProjects.forEach {
-        dependsOn("${it.path}:buildTechnology")
-    }
-    finalizedBy(":packageAllVersions")
-}
-
-tasks.register("buildModifiedConnectionTypes") {
-    group = "technologies"
-    description = "Build only modified connection types"
-
-    val modifiedProjects = modifiedProjects(TYPE.CONNECTION_TYPE, subprojects)
 
     logger.info(this.description)
     dependsOn("incrementBuildMeta")
