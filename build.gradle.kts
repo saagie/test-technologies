@@ -75,7 +75,7 @@ subprojects {
     configure<NodeExtension> {
         download.set(true)
         version.set("16.14.2")
-        npmVersion.set("8.6.0")
+        npmVersion.set("8.5.0")
         yarnVersion.set("1.22.18")
     }
 }
