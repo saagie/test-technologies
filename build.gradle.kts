@@ -16,7 +16,9 @@
  * limitations under the License.
  */
 import com.github.gradle.node.NodeExtension
+import com.github.gradle.node.NodePlugin
 import com.github.gradle.node.yarn.task.YarnInstallTask
+import com.saagie.technologies.SaagieTechnologiesGradlePlugin
 import com.saagie.technologies.SaagieTechnologiesPackageGradlePlugin
 import com.saagie.technologies.TYPE
 import com.saagie.technologies.modifiedProjects
@@ -71,17 +73,18 @@ config {
 }
 
 subprojects {
-    apply(plugin = "com.github.node-gradle.node")
+    apply<NodePlugin>()
+    apply<SaagieTechnologiesGradlePlugin>()
 
     configure<NodeExtension> {
         download.set(true)
         version.set("16.14.2")
         npmVersion.set("8.5.0")
         yarnVersion.set("1.22.18")
+    }
 
-        this@subprojects.tasks.withType<YarnInstallTask>().forEach {
-            it.environment.put("YARN_CACHE_FOLDER", "${this@subprojects.projectDir.absolutePath}/.yarn/cache")
-        }
+    tasks.withType<YarnInstallTask>().forEach {
+        it.environment.put("YARN_CACHE_FOLDER", "${projectDir.absolutePath}/.yarn/cache")
     }
 }
 
