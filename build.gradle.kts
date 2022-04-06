@@ -15,6 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import com.github.gradle.node.NodeExtension
+import com.github.gradle.node.NodePlugin
+import com.github.gradle.node.yarn.task.YarnTask
 import com.saagie.technologies.SaagieTechnologiesPackageGradlePlugin
 import com.saagie.technologies.TYPE
 import com.saagie.technologies.modifiedProjects
@@ -68,11 +71,28 @@ config {
     }
 }
 
+configure(subprojects) {
+    apply<NodePlugin>()
+
+    configure<NodeExtension> {
+        download.set(true)
+        version.set("16.14.2")
+        npmVersion.set("8.5.0")
+        yarnVersion.set("1.22.18")
+    }
+
+    tasks {
+        val yarn_install by getting {
+            (this as YarnTask).args.addAll("--cache-folder", File(File(project.projectDir, ".cache"), "yarn").toString())
+        }
+    }
+}
+
 tasks.register("buildModifiedJobs") {
     group = "technologies"
     description = "Build only modified jobs"
 
-    val modifiedProjects = modifiedProjects(TYPE.JOB, subprojects)
+    val modifiedProjects = modifiedProjects(TYPE.CONNECTION_TYPE, subprojects) + modifiedProjects(TYPE.JOB, subprojects)
 
     logger.info(this.description)
     dependsOn("incrementBuildMeta")
@@ -98,26 +118,11 @@ tasks.register("buildModifiedApps") {
     finalizedBy(":packageAllVersions")
 }
 
-tasks.register("buildModifiedConnectionTypes") {
-    group = "technologies"
-    description = "Build only modified connection types"
-
-    val modifiedProjects = modifiedProjects(TYPE.CONNECTION_TYPE, subprojects)
-
-    logger.info(this.description)
-    dependsOn("incrementBuildMeta")
-    logger.debug("$modifiedProjects")
-    modifiedProjects.forEach {
-        dependsOn("${it.path}:buildTechnology")
-    }
-    finalizedBy(":packageAllVersions")
-}
-
 tasks.register("localBuildModifiedJobs") {
     group = "technologies"
     description = "Local build only modified jobs without push"
 
-    val modifiedProjects = modifiedProjects(TYPE.JOB, subprojects)
+    val modifiedProjects = modifiedProjects(TYPE.CONNECTION_TYPE, subprojects) + modifiedProjects(TYPE.JOB, subprojects)
 
     logger.info(this.description)
     dependsOn("incrementBuildMeta")
