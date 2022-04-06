@@ -18,6 +18,7 @@
 import com.github.gradle.node.NodeExtension
 import com.github.gradle.node.NodePlugin
 import com.github.gradle.node.yarn.task.YarnInstallTask
+import com.github.gradle.node.yarn.task.YarnTask
 import com.saagie.technologies.SaagieTechnologiesGradlePlugin
 import com.saagie.technologies.SaagieTechnologiesPackageGradlePlugin
 import com.saagie.technologies.TYPE
@@ -72,9 +73,8 @@ config {
     }
 }
 
-subprojects {
+configure(subprojects) {
     apply<NodePlugin>()
-    apply<SaagieTechnologiesGradlePlugin>()
 
     configure<NodeExtension> {
         download.set(true)
@@ -83,8 +83,10 @@ subprojects {
         yarnVersion.set("1.22.18")
     }
 
-    tasks.withType<YarnInstallTask>().forEach {
-        it.environment.put("YARN_CACHE_FOLDER", "${projectDir.absolutePath}/.yarn/cache")
+    tasks {
+        val yarn_install by getting {
+            (this as YarnTask).args.addAll("--cache-folder", File(File(project.projectDir, ".cache"), "yarn").toString())
+        }
     }
 }
 
