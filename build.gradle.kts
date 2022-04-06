@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import com.github.gradle.node.NodeExtension
+import com.github.gradle.node.yarn.task.YarnTask
 import com.saagie.technologies.SaagieTechnologiesPackageGradlePlugin
 import com.saagie.technologies.TYPE
 import com.saagie.technologies.modifiedProjects
@@ -77,6 +78,10 @@ subprojects {
         version.set("16.14.2")
         npmVersion.set("8.5.0")
         yarnVersion.set("1.22.18")
+
+        this@subprojects.tasks.withType<YarnTask>().forEach {
+            it.environment.put("YARN_CACHE_FOLDER", "${this@subprojects.projectDir.absolutePath}/.yarn/cache")
+        }
     }
 }
 
