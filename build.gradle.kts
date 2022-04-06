@@ -77,6 +77,10 @@ subprojects {
         version.set("16.14.2")
         npmVersion.set("8.6.0")
         yarnVersion.set("1.22.18")
+
+        workDir.set(buildDir.resolve("node"))
+        npmWorkDir.set(buildDir.resolve("npm"))
+        yarnWorkDir.set(buildDir.resolve("yarn"))
     }
 }
 
