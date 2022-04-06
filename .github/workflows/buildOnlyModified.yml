@@ -21,10 +21,10 @@ jobs:
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       - name: run gradle :buildModifiedJobs
         run: |
-          ./gradlew buildModifiedJobs --parallel --scan -Dversion.buildmeta=${{ steps.extract_branch.outputs.branch }}
+          ./gradlew --no-daemon buildModifiedJobs --parallel --scan -Dversion.buildmeta=${{ steps.extract_branch.outputs.branch }}
       - name: run gradle :buildModifiedApps
         run: |
-          ./gradlew buildModifiedApps --scan -Dversion.buildmeta=${{ steps.extract_branch.outputs.branch }}
+          ./gradlew --no-daemon buildModifiedApps --scan -Dversion.buildmeta=${{ steps.extract_branch.outputs.branch }}
       - name: extract branch
         id: git_info
         run: echo "::set-output name=changes::$(git status -s | wc -l)"
