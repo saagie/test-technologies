@@ -24,6 +24,7 @@ jobs:
         id: delete_prerelease
         uses: actions/github-script@v3
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const result = await github.repos.listReleases(context.repo);
             result.data
@@ -47,6 +48,8 @@ jobs:
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.extract_version.outputs.v }}
           release_name: Release ${{ steps.extract_version.outputs.v }}
@@ -55,6 +58,8 @@ jobs:
       - name: Upload Release technologies Asset ZIP
         id: upload-release-asset-technologies-zip
         uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./tmp-zip/technologies.zip
@@ -63,6 +68,8 @@ jobs:
       - name: Upload Release technologies Asset JSON
         id: upload-release-asset-technologies-json
         uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./tmp-zip/docker_listing.json
@@ -71,6 +78,8 @@ jobs:
       - name: Upload Release technologies Asset TEXT-PLAIN
         id: upload-release-asset-technologies-textplain
         uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./tmp-zip/docker_listing.txt
@@ -87,3 +96,5 @@ jobs:
           git commit -am "[BOT] Set new version"
       - name: Push changes
         uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
