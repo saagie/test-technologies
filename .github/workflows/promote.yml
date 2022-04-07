@@ -23,7 +23,7 @@ jobs:
           DOCKER_USERNAME: UNSET
           DOCKER_PASSWORD: UNSET
         run: |
-          ./gradlew promote --stacktrace
+          ./gradlew promote --scan --stacktrace
       - name: Delete PreRelease
         id: delete_prerelease
         uses: actions/github-script@v3
