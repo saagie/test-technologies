@@ -18,6 +18,10 @@ jobs:
         id: extract_pr_version
         run: echo "::set-output name=v::$(cat version.properties | grep 'semver' | sed -e 's/^version.semver=//')"
       - name: run gradle promote
+        env:
+          # no docker image should be pushed in this test repository
+          DOCKER_USERNAME: UNSET
+          DOCKER_PASSWORD: UNSET
         run: |
           ./gradlew promote --stacktrace
       - name: Delete PreRelease
