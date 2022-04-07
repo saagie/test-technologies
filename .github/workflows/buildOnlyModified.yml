@@ -22,9 +22,13 @@ jobs:
       - name: run gradle :buildModifiedJobs
         run: |
           ./gradlew buildModifiedJobs --parallel --scan -Dversion.buildmeta=${{ steps.extract_branch.outputs.branch }}
+          git status -s
+          git status -s | wc -l
       - name: run gradle :buildModifiedApps
         run: |
           ./gradlew buildModifiedApps --scan -Dversion.buildmeta=${{ steps.extract_branch.outputs.branch }}
+          git status -s
+          git status -s | wc -l
       - name: get git changes
         id: git_changes
         run: echo "::set-output name=changes::$(git status -s | wc -l)"
