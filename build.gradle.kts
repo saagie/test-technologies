@@ -48,12 +48,12 @@ config {
         vendor = "Saagie"
 
         scm {
-            url = "https://github.com/saagie/technologies"
+            url = "https://github.com/saagie/test-technologies"
         }
 
         links {
             website = "https://www.saagie.com"
-            scm = "https://github.com/saagie/technologies"
+            scm = "https://github.com/saagie/test-technologies"
         }
 
         licensing {
