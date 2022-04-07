@@ -6,6 +6,10 @@ If you are looking for technologies to include in Saagie, see the [official repo
 
 # Saagie Test Technologies
 
+The URL of the latest version of this technology repository is:
+
+https://github.com/saagie/test-technologies/releases/latest/download/technologies.zip
+
 ## Developement
 
 Development should be done in its own dedicated branch.
