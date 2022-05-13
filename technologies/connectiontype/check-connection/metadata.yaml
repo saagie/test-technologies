@@ -4,16 +4,15 @@ id: check-connection
 label: Check Connection
 
 parameters:
+  - type: TOGGLE
+    id: ok
+    label: Is check OK?
+    mandatory: true
   - type: TEXT
-    id: username
-    label: Username
-    mandatory: true
-  - type: PASSWORD
-    id: password
-    label: Password
-    mandatory: true
+    id: message
+    label: Error message
 
 actions:
-  check:
-    script: ./dist/module.js
+  checkConnection:
+    script: ./module.js
     function: checkConnection
