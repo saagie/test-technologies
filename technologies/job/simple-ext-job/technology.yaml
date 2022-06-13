@@ -4,3 +4,4 @@ label: Simple External Job
 description: Simple External Job
 available: true
 type: EXTERNAL_JOB
+iconPath: dist/valid_image.png
