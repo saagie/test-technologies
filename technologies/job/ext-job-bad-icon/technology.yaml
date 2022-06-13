@@ -4,4 +4,4 @@ label: External Job with a bad Icon
 description: External Job with a bad Icon
 available: true
 type: EXTERNAL_JOB
-iconPath: dist/invalid_image_format.gif
+iconPath: ./invalid_image_format.gif
