@@ -1,0 +1,13 @@
+name: Test Saagie Dev Tools runners
+
+on:
+  push:
+    branches:
+    - test/actions-runner
+
+jobs:
+  "test-devtools-saagie":
+    runs-on: "owner:saagie-devtools|env:dev2"
+    steps:
+    - name: "Hello World"
+      uses: docker://docker/whalesay
