@@ -1,10 +1,10 @@
 version: v2
-id: simple-ext-job
-label: Simple External Job
-description: Simple External Job
+id: ext-job-bad-icon
+label: External Job with a bad Icon
+description: External Job with a bad Icon
 available: true
 type: EXTERNAL_JOB
-iconPath: dist/valid_image.png
+iconPath: dist/invalid_image_format.gif
 
 contexts:
   - id: default
