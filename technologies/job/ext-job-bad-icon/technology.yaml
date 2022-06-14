@@ -1,0 +1,7 @@
+version: v2
+id: ext-job-bad-icon
+label: External Job with a bad Icon
+description: External Job with a bad Icon
+available: true
+type: EXTERNAL_JOB
+iconPath: ./invalid_image_format.gif
