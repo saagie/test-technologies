@@ -7,12 +7,12 @@ on:
     - test/actions-runner
 
 jobs:
-  "test-devtools-saagie:dev2":
+  "test-devtools-saagie-dev2":
     runs-on: "owner:saagie-devtools|env:dev2"
     steps:
     - name: "Hello World"
       uses: docker://docker/whalesay
-  "test-devtools-saagie:prod":
+  "test-devtools-saagie-prod":
     runs-on: "owner:saagie-devtools"
     steps:
     - name: "Hello World"
