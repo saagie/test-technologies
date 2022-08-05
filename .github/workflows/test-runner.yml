@@ -2,7 +2,6 @@ name: Test Saagie Dev Tools runners
 
 on:
   workflow_dispatch:
-    inputs: {}
   push:
     branches:
     - test/actions-runner
