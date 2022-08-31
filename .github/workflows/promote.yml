@@ -4,7 +4,9 @@ on:
     types: [closed]
 jobs:
   build:
-    runs-on: [self-hosted, technologies]
+    runs-on: "owner:saagie-devtools"
+    container:
+      image: eclipse-temurin:17
     steps:
       - name: Dump GitHub context
         env:

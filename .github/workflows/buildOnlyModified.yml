@@ -9,9 +9,10 @@ on:
 
 jobs:
   build:
-    runs-on: [self-hosted, technologies]
+    runs-on: "owner:saagie-devtools"
+    container:
+      image: eclipse-temurin:17
     if: "!contains(github.event.head_commit.message, '[BOT]')"
-
     steps:
       - uses: actions/checkout@v1
       - name: extract branch
