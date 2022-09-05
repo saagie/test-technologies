@@ -10,23 +10,23 @@ on:
 jobs:
   build:
     runs-on: "owner:saagie-devtools"
-    container:
-      image: eclipse-temurin:17
     if: "!contains(github.event.head_commit.message, '[BOT]')"
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - name: extract branch
         id: extract_branch
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       - name: run gradle :buildModifiedJobs
-        run: |
-          ./gradlew buildModifiedJobs --parallel --scan -Dversion.buildmeta=${{ steps.extract_branch.outputs.branch }}
+        uses: docker://eclipse-temurin:17
+        with:
+          args: ./gradlew buildModifiedJobs --parallel --scan -Dversion.buildmeta=${{ steps.extract_branch.outputs.branch }}
       - name: run gradle :buildModifiedApps
-        run: |
-          ./gradlew buildModifiedApps --scan -Dversion.buildmeta=${{ steps.extract_branch.outputs.branch }}
+        uses: docker://eclipse-temurin:17
+        with:
+          args: ./gradlew buildModifiedApps --scan -Dversion.buildmeta=${{ steps.extract_branch.outputs.branch }}
       - name: get git changes
         id: git_changes
-        run: echo "::set-output name=changes::$(git status -s | wc -l)"
+        run: type -t git >/dev/null && echo "::set-output name=changes::$(git status -s | wc -l)"
       - name: Commit files
         if: steps.git_changes.outputs.changes > 0
         run: |
@@ -44,18 +44,22 @@ jobs:
       - name: extract version
         id: extract_version
         run: echo "::set-output name=v::$(cat version.properties | grep 'semver' | sed -e 's/^version.semver=//')"
-      - name: List all releases
+      - name: Delete existing releases
         uses: actions/github-script@0.3.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const result = await github.repos.listReleases(context.repo);
-            result.data
+            await Promise.allSettled(result.data
               .filter(release => release.tag_name == "${{ steps.extract_version.outputs.v }}")
-              .forEach(function(release){
-                  const releaseObj = {release_id:release.id, owner:context.repo.owner, repo:context.repo.repo}
-                  github.repos.deleteRelease(releaseObj)
-                });
+              .map(release => {
+                  github.repos.deleteRelease({
+                    release_id:release.id,
+                    owner:context.repo.owner,
+                    repo:context.repo.repo,
+                  });
+              })
+            );
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
