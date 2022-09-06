@@ -4,9 +4,8 @@ on:
     types: [closed]
 jobs:
   build:
+    if: github.event.pull_request.merged == true
     runs-on: "owner:saagie-devtools"
-    container:
-      image: eclipse-temurin:17
     steps:
       - name: Dump GitHub context
         env:
@@ -15,17 +14,18 @@ jobs:
       - name: extract variable
         id: extract_variable
         run: echo "::set-output name=pr_number::${{ github.event.pull_request.number }}";echo "::set-output name=repo::${{ github.event.pull_request.number }}"
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - name: extract current version
         id: extract_pr_version
         run: echo "::set-output name=v::$(cat version.properties | grep 'semver' | sed -e 's/^version.semver=//')"
       - name: run gradle promote
+        uses: docker://eclipse-temurin:17
         env:
           # no docker image should be pushed in this test repository
           DOCKER_USERNAME: UNSET
           DOCKER_PASSWORD: UNSET
-        run: |
-          ./gradlew promote --stacktrace
+        with:
+          args: ./gradlew promote --stacktrace
       - name: Delete PreRelease
         id: delete_prerelease
         uses: actions/github-script@v3
@@ -33,21 +33,33 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const result = await github.repos.listReleases(context.repo);
-            result.data
+            await Promise.allSettled(result.data
               .filter(release => release.tag_name == "${{ steps.extract_pr_version.outputs.v }}")
-              .forEach(function(release){
-                  const releaseObj = {release_id:release.id, owner:context.repo.owner, repo:context.repo.repo}
-                  github.repos.deleteRelease(releaseObj)
-                });
-      - name: Delete PreRelease Tag
-        run: |
-          git config --local user.email "github-action@saagie.com"
-          git config --local user.name "GitHub Action Bot"
-          remote_repo="https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
-          git push --delete "${remote_repo}" ${{ steps.extract_pr_version.outputs.v }}
+              .map(release =>
+                  github.repos.deleteRelease({
+                    owner:      context.repo.owner,
+                    repo:       context.repo.repo,
+                    release_id: release.id,
+                  });
+              )
+            );
+            try {
+              const getRefParams = {
+                owner: context.repo.owner,
+                repo:  context.repo.repo,
+                ref:   "tags/${{ steps.extract_pr_version.outputs.v }}",
+              };
+              const getRef = await github.git.getRef(getRefParams);
+              github.git.deleteRef(getRefParams);
+            } catch (e) {
+              if (e.status != 404) {
+                throw e;
+              }
+            }
       - name: Remove buildMeta version
-        run: |
-          ./gradlew incrementBuildMeta -Dversion.buildmeta=
+        uses: docker://eclipse-temurin:17
+        with:
+          args: ./gradlew incrementBuildMeta -Dversion.buildmeta=
       - name: extract real version
         id: extract_version
         run: echo "::set-output name=v::$(cat version.properties | grep 'semver' | sed -e 's/^version.semver=//')"
@@ -92,14 +104,17 @@ jobs:
           asset_name: docker_listing.txt
           asset_content_type: text/plain
       - name: Upgrade version
-        run: |
-          ./gradlew incrementMinor
-          ./gradlew incrementBuildMeta -Dversion.buildmeta=
+        uses: docker://eclipse-temurin:17
+        with:
+          args: ./gradlew incrementMinor -Dversion.buildmeta=
+
       - name: Commit files
-        run: |
-          git config --local user.email "github-action@saagie.com"
-          git config --local user.name "GitHub Action Bot"
-          git commit -am "[BOT] Set new version"
+        run: git commit -am "[BOT] Set new version"
+        env:
+          GIT_AUTHOR_NAME: GitHub Action Bot
+          GIT_AUTHOR_EMAIL: github-action@saagie.com
+          GIT_COMMITTER_NAME: GitHub Action Bot
+          GIT_COMMITTER_EMAIL: github-action@saagie.com
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
