@@ -1,0 +1,7 @@
+version: v2
+id: optional-param-ext-job
+label: Optional Param External Job
+description: Optional Param External Job
+available: true
+type: EXTERNAL_JOB
+iconPath: ./valid_image.png
