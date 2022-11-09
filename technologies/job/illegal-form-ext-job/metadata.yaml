@@ -105,20 +105,8 @@ contexts:
           - id: v2
             label: another value
       - type: PASSWORD
-        id: password-with-static-and-dynamic
-        label: Password With Static And Dynamic
-        dynamicValues:
-          script: "./module.js"
-          function: getState
-        staticValues:
-          - id: v1
-            label: some first value
-          - id: v2
-            label: another value
-      - type: PASSWORD
-        id: password-with-default
-        label: Password With Static
-        defaultValue: 12345
+        id: password
+        label: Password in job parameters
 
     actions:
       start:
